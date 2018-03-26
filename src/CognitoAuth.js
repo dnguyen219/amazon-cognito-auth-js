@@ -326,8 +326,7 @@
         this.signInUserSession.setIdToken(idToken);
       }
       if (map.has(this.getCognitoConstants().ACCESSTOKEN)) {
-        accessToken.setJwtToken(map.get(this.getCognitoConstants().ACCESSTOKEN));
-        this.signInUserSession.setAccessToken(accessToken);
+        this.signInUserSession.setAccessToken(new _CognitoAccessToken2.default(map.get(this.getCognitoConstants().ACCESSTOKEN)));
       } else {
         this.signInUserSession.setAccessToken(accessToken);
       }

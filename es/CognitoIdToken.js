@@ -1,5 +1,3 @@
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
 /*!
  * Amazon Cognito Auth SDK for JavaScript
  * Copyright 2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
@@ -20,15 +18,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 import { Buffer } from 'buffer/';
 
 /** @class */
-
-var CognitoIdToken = function () {
+export default class CognitoIdToken {
   /**
    * Constructs a new CognitoIdToken object
    * @param {string=} IdToken The JWT Id token
    */
-  function CognitoIdToken(IdToken) {
-    _classCallCheck(this, CognitoIdToken);
-
+  constructor(IdToken) {
     // Assign object
     this.jwtToken = IdToken || '';
     this.payload = this.decodePayload();
@@ -37,47 +32,35 @@ var CognitoIdToken = function () {
   /**
    * @returns {string} the record's token.
    */
-
-
-  CognitoIdToken.prototype.getJwtToken = function getJwtToken() {
+  getJwtToken() {
     return this.jwtToken;
-  };
+  }
 
   /**
    * Sets new value for id token.
    * @param {string=} idToken The JWT Id token
    * @returns {void}
    */
-
-
-  CognitoIdToken.prototype.setJwtToken = function setJwtToken(idToken) {
+  setJwtToken(idToken) {
     this.jwtToken = idToken;
-  };
+  }
 
   /**
    * @returns {int} the token's expiration (exp member).
    */
-
-
-  CognitoIdToken.prototype.getExpiration = function getExpiration() {
+  getExpiration() {
     return this.payload.exp;
-  };
+  }
 
   /**
    * @returns {object} the token's payload.
    */
-
-
-  CognitoIdToken.prototype.decodePayload = function decodePayload() {
-    var payload = this.jwtToken.split('.')[1];
+  decodePayload() {
+    const payload = this.jwtToken.split('.')[1];
     try {
       return JSON.parse(Buffer.from(payload, 'base64').toString('utf8'));
     } catch (err) {
       return {};
     }
-  };
-
-  return CognitoIdToken;
-}();
-
-export default CognitoIdToken;
+  }
+}

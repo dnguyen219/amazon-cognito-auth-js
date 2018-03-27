@@ -2674,7 +2674,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _CognitoAccessToken = __webpack_require__(1);
 
-	var _CognitoAccessToken2 = _interopRequireDefault(_CognitoAccessToken);
+	var _CognitoAccessToken3 = _interopRequireDefault(_CognitoAccessToken);
 
 	var _CognitoIdToken = __webpack_require__(2);
 
@@ -2959,7 +2959,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (!this.compareSets(tokenScopesInputSet, cachedScopesSet)) {
 	        var tokenScopes = new _CognitoTokenScopes2.default(this.TokenScopesArray);
 	        var idToken = new _CognitoIdToken2.default();
-	        var accessToken = new _CognitoAccessToken2.default();
+	        var accessToken = new _CognitoAccessToken3.default();
 	        var refreshToken = new _CognitoRefreshToken2.default();
 	        this.signInUserSession.setTokenScopes(tokenScopes);
 	        this.signInUserSession.setIdToken(idToken);
@@ -3037,7 +3037,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function getTokenQueryParameter(httpRequestResponse) {
 	      var map = this.getQueryParameters(httpRequestResponse, this.getCognitoConstants().QUERYPARAMETERREGEX1);
 	      var idToken = new _CognitoIdToken2.default();
-	      var accessToken = new _CognitoAccessToken2.default();
+	      var accessToken = new _CognitoAccessToken3.default();
 	      var refreshToken = new _CognitoRefreshToken2.default();
 	      var state = null;
 	      if (map.has(this.getCognitoConstants().IDTOKEN)) {
@@ -3047,8 +3047,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.signInUserSession.setIdToken(idToken);
 	      }
 	      if (map.has(this.getCognitoConstants().ACCESSTOKEN)) {
-	        accessToken.setJwtToken(map.get(this.getCognitoConstants().ACCESSTOKEN));
-	        this.signInUserSession.setAccessToken(accessToken);
+	        this.signInUserSession.setAccessToken(new _CognitoAccessToken2.default(map.get(this.getCognitoConstants().ACCESSTOKEN)));
 	      } else {
 	        this.signInUserSession.setAccessToken(accessToken);
 	      }
@@ -3091,7 +3090,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	      var tokenScopes = new _CognitoTokenScopes2.default(scopesArray);
 	      var idToken = new _CognitoIdToken2.default(this.storage.getItem(idTokenKey));
-	      var accessToken = new _CognitoAccessToken2.default(this.storage.getItem(accessTokenKey));
+	      var accessToken = new _CognitoAccessToken3.default(this.storage.getItem(accessTokenKey));
 	      var refreshToken = new _CognitoRefreshToken2.default(this.storage.getItem(refreshTokenKey));
 
 	      var sessionData = {
@@ -3383,7 +3382,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          this.signInUserSession.setIdToken(new _CognitoIdToken2.default(jsonDataObject.id_token));
 	        }
 	        if (Object.prototype.hasOwnProperty.call(jsonDataObject, this.getCognitoConstants().ACCESSTOKEN)) {
-	          this.signInUserSession.setAccessToken(new _CognitoAccessToken2.default(jsonDataObject.access_token));
+	          this.signInUserSession.setAccessToken(new _CognitoAccessToken3.default(jsonDataObject.access_token));
 	        }
 	        this.cacheTokensScopes();
 	        this.userhandler.onSuccess(this.signInUserSession);
@@ -3400,7 +3399,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function onSuccessExchangeForToken(jsonData) {
 	      var jsonDataObject = JSON.parse(jsonData);
 	      var refreshToken = new _CognitoRefreshToken2.default();
-	      var accessToken = new _CognitoAccessToken2.default();
+	      var accessToken = new _CognitoAccessToken3.default();
 	      var idToken = new _CognitoIdToken2.default();
 	      var state = null;
 	      if (Object.prototype.hasOwnProperty.call(jsonDataObject, this.getCognitoConstants().ERROR)) {
@@ -3412,7 +3411,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.signInUserSession.setIdToken(idToken);
 	      }
 	      if (Object.prototype.hasOwnProperty.call(jsonDataObject, this.getCognitoConstants().ACCESSTOKEN)) {
-	        this.signInUserSession.setAccessToken(new _CognitoAccessToken2.default(jsonDataObject.access_token));
+	        this.signInUserSession.setAccessToken(new _CognitoAccessToken3.default(jsonDataObject.access_token));
 	      } else {
 	        this.signInUserSession.setAccessToken(accessToken);
 	      }
@@ -3735,6 +3734,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  revLookup[code.charCodeAt(i)] = i
 	}
 
+	// Support decoding URL-safe base64 strings, as Node.js does.
+	// See: https://en.wikipedia.org/wiki/Base64#URL_applications
 	revLookup['-'.charCodeAt(0)] = 62
 	revLookup['_'.charCodeAt(0)] = 63
 
@@ -3754,22 +3755,22 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function byteLength (b64) {
 	  // base64 is 4/3 + up to two characters of the original data
-	  return b64.length * 3 / 4 - placeHoldersCount(b64)
+	  return (b64.length * 3 / 4) - placeHoldersCount(b64)
 	}
 
 	function toByteArray (b64) {
-	  var i, j, l, tmp, placeHolders, arr
+	  var i, l, tmp, placeHolders, arr
 	  var len = b64.length
 	  placeHolders = placeHoldersCount(b64)
 
-	  arr = new Arr(len * 3 / 4 - placeHolders)
+	  arr = new Arr((len * 3 / 4) - placeHolders)
 
 	  // if there are placeholders, only get up to the last complete 4 chars
 	  l = placeHolders > 0 ? len - 4 : len
 
 	  var L = 0
 
-	  for (i = 0, j = 0; i < l; i += 4, j += 3) {
+	  for (i = 0; i < l; i += 4) {
 	    tmp = (revLookup[b64.charCodeAt(i)] << 18) | (revLookup[b64.charCodeAt(i + 1)] << 12) | (revLookup[b64.charCodeAt(i + 2)] << 6) | revLookup[b64.charCodeAt(i + 3)]
 	    arr[L++] = (tmp >> 16) & 0xFF
 	    arr[L++] = (tmp >> 8) & 0xFF
@@ -3796,7 +3797,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var tmp
 	  var output = []
 	  for (var i = start; i < end; i += 3) {
-	    tmp = (uint8[i] << 16) + (uint8[i + 1] << 8) + (uint8[i + 2])
+	    tmp = ((uint8[i] << 16) & 0xFF0000) + ((uint8[i + 1] << 8) & 0xFF00) + (uint8[i + 2] & 0xFF)
 	    output.push(tripletToBase64(tmp))
 	  }
 	  return output.join('')
@@ -3841,7 +3842,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.read = function (buffer, offset, isLE, mLen, nBytes) {
 	  var e, m
-	  var eLen = nBytes * 8 - mLen - 1
+	  var eLen = (nBytes * 8) - mLen - 1
 	  var eMax = (1 << eLen) - 1
 	  var eBias = eMax >> 1
 	  var nBits = -7
@@ -3854,12 +3855,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	  e = s & ((1 << (-nBits)) - 1)
 	  s >>= (-nBits)
 	  nBits += eLen
-	  for (; nBits > 0; e = e * 256 + buffer[offset + i], i += d, nBits -= 8) {}
+	  for (; nBits > 0; e = (e * 256) + buffer[offset + i], i += d, nBits -= 8) {}
 
 	  m = e & ((1 << (-nBits)) - 1)
 	  e >>= (-nBits)
 	  nBits += mLen
-	  for (; nBits > 0; m = m * 256 + buffer[offset + i], i += d, nBits -= 8) {}
+	  for (; nBits > 0; m = (m * 256) + buffer[offset + i], i += d, nBits -= 8) {}
 
 	  if (e === 0) {
 	    e = 1 - eBias
@@ -3874,7 +3875,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
 	  var e, m, c
-	  var eLen = nBytes * 8 - mLen - 1
+	  var eLen = (nBytes * 8) - mLen - 1
 	  var eMax = (1 << eLen) - 1
 	  var eBias = eMax >> 1
 	  var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0)
@@ -3907,7 +3908,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      m = 0
 	      e = eMax
 	    } else if (e + eBias >= 1) {
-	      m = (value * c - 1) * Math.pow(2, mLen)
+	      m = ((value * c) - 1) * Math.pow(2, mLen)
 	      e = e + eBias
 	    } else {
 	      m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen)
